@@ -8,7 +8,7 @@
   "activationCommands": {
     "atom-workspace": "atom-nwdiag-preview:toggle"
   },
-  "repository": "https://github.com/atom/atom-nwdiag-preview",
+  "repository": "https://github.com/hitting1024/atom-nwdiag-preview",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
