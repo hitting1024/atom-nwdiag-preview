@@ -3,12 +3,10 @@ AtomNwdiagPreviewView = require './atom-nwdiag-preview-view'
 
 module.exports = AtomNwdiagPreview =
   atomNwdiagPreviewView: null
-  modalPanel: null
   subscriptions: null
 
   activate: (state) ->
     @atomNwdiagPreviewView = new AtomNwdiagPreviewView(state.atomNwdiagPreviewViewState)
-    @modalPanel = atom.workspace.addModalPanel(item: @atomNwdiagPreviewView.getElement(), visible: false)
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
@@ -17,7 +15,6 @@ module.exports = AtomNwdiagPreview =
     @subscriptions.add atom.commands.add 'atom-workspace', 'atom-nwdiag-preview:toggle': => @toggle()
 
   deactivate: ->
-    @modalPanel.destroy()
     @subscriptions.dispose()
     @atomNwdiagPreviewView.destroy()
 
@@ -26,8 +23,3 @@ module.exports = AtomNwdiagPreview =
 
   toggle: ->
     console.log 'AtomNwdiagPreview was toggled!'
-
-    if @modalPanel.isVisible()
-      @modalPanel.hide()
-    else
-      @modalPanel.show()
