@@ -23,3 +23,4 @@ module.exports = AtomNwdiagPreview =
 
   toggle: ->
     console.log 'AtomNwdiagPreview was toggled!'
+    atom.workspace.open()
