@@ -1,6 +1,8 @@
 AtomNwdiagPreviewView = require './atom-nwdiag-preview-view'
 {CompositeDisposable} = require 'atom'
 
+ATOM_NWDIAG_PREVIEW_PROTOCOL = "atom-nwdiag-preview"
+
 module.exports = AtomNwdiagPreview =
   atomNwdiagPreviewView: null
   subscriptions: null
@@ -14,6 +16,28 @@ module.exports = AtomNwdiagPreview =
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'atom-nwdiag-preview:toggle': => @toggle()
 
+    # define opener
+    atom.workspace.addOpener (targetUrl) ->
+      try
+        url = require 'url'
+        {protocol, host, pathname} = url.parse(targetUrl)
+      catch error
+        console.error error
+        return
+      # check protocol
+      return unless protocol is "#{ATOM_NWDIAG_PREVIEW_PROTOCOL}:"
+
+      try
+        pathname = decodeURI(pathname) if pathname
+      catch error
+        console.error error
+        return
+
+      {TextEditor} = require 'atom'
+      view = new TextEditor
+      view.setText "editor: #{pathname}"
+      view
+
   deactivate: ->
     @subscriptions.dispose()
     @atomNwdiagPreviewView.destroy()
@@ -22,5 +46,7 @@ module.exports = AtomNwdiagPreview =
     atomNwdiagPreviewViewState: @atomNwdiagPreviewView.serialize()
 
   toggle: ->
-    console.log 'AtomNwdiagPreview was toggled!'
-    atom.workspace.open()
+    editor = atom.workspace.getActiveTextEditor()
+    return unless editor?
+
+    atom.workspace.open("#{ATOM_NWDIAG_PREVIEW_PROTOCOL}://editor/#{editor.id}")
