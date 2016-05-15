@@ -33,10 +33,7 @@ module.exports = AtomNwdiagPreview =
         console.error error
         return
 
-      {TextEditor} = require 'atom'
-      view = new TextEditor
-      view.setText "editor: #{pathname}"
-      view
+      new AtomNwdiagPreviewView editorId: pathname.substring(1)
 
   deactivate: ->
     @subscriptions.dispose()
