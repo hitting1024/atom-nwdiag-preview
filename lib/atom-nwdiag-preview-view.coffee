@@ -12,3 +12,6 @@ class AtomNwdiagPreviewView extends View
 
   getTitle: ->
     "#{@editorId} nwdiag preview"
+
+  getURI: ->
+    "atom-nwdiag-preview://editor/#{@editorId}" if @editorId?

@@ -1,8 +1,6 @@
 AtomNwdiagPreviewView = require './atom-nwdiag-preview-view'
 {CompositeDisposable} = require 'atom'
 
-ATOM_NWDIAG_PREVIEW_PROTOCOL = "atom-nwdiag-preview"
-
 module.exports = AtomNwdiagPreview =
   atomNwdiagPreviewView: null
   subscriptions: null
@@ -25,7 +23,7 @@ module.exports = AtomNwdiagPreview =
         console.error error
         return
       # check protocol
-      return unless protocol is "#{ATOM_NWDIAG_PREVIEW_PROTOCOL}:"
+      return unless protocol is "atom-nwdiag-preview:"
 
       try
         pathname = decodeURI(pathname) if pathname
@@ -43,7 +41,25 @@ module.exports = AtomNwdiagPreview =
     atomNwdiagPreviewViewState: @atomNwdiagPreviewView.serialize()
 
   toggle: ->
+    if atom.workspace.getActivePaneItem() instanceof AtomNwdiagPreviewView
+      atom.workspace.destroyActivePaneItem()
+      return
+
     editor = atom.workspace.getActiveTextEditor()
     return unless editor?
 
-    atom.workspace.open("#{ATOM_NWDIAG_PREVIEW_PROTOCOL}://editor/#{editor.id}")
+    @openPreview(editor)
+
+  openPreview: (editor) ->
+    uri = "atom-nwdiag-preview://editor/#{editor.id}"
+    if atom.workspace.paneForURI(uri)?
+      # already open preview
+      return
+
+    currentActivePane = atom.workspace.getActivePane()
+    options =
+      split: 'right'
+      searchAllPane: true
+    atom.workspace.open(uri, options).done (view) ->
+      if view instanceof AtomNwdiagPreviewView
+        currentActivePane.activate()
