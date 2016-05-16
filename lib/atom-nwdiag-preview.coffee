@@ -48,13 +48,13 @@ module.exports = AtomNwdiagPreview =
     editor = atom.workspace.getActiveTextEditor()
     return unless editor?
 
-    @openPreview(editor)
+    @openPreview(editor) unless @closePreview(editor)
+
+  uriForEditor: (editor) ->
+    "atom-nwdiag-preview://editor/#{editor.id}"
 
   openPreview: (editor) ->
-    uri = "atom-nwdiag-preview://editor/#{editor.id}"
-    if atom.workspace.paneForURI(uri)?
-      # already open preview
-      return
+    uri = @uriForEditor(editor)
 
     currentActivePane = atom.workspace.getActivePane()
     options =
@@ -63,3 +63,12 @@ module.exports = AtomNwdiagPreview =
     atom.workspace.open(uri, options).done (view) ->
       if view instanceof AtomNwdiagPreviewView
         currentActivePane.activate()
+
+  closePreview: (editor) ->
+    uri = @uriForEditor(editor)
+    previewPane = atom.workspace.paneForURI(uri)
+    if previewPane?
+      previewPane.destroyItem(previewPane.itemForURI(uri))
+      return true
+    else
+      return false
